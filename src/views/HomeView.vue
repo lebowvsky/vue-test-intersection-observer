@@ -1,4 +1,5 @@
 <template>
+  <h1>Home</h1>
   <div class="container">
     <div class="wrapper">
       <article class="article">
@@ -7,7 +8,7 @@
           :key="index"
           class="section"
         >
-          <h2 :id="`index`" class="section-title">{{ header }}</h2>
+          <h2 :id="`${header}`" class="section-title">{{ header }}</h2>
           <p class="section-text">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Adipisci,
             numquam beatae est ut quae ex qui perspiciatis officia distinctio
@@ -36,20 +37,27 @@
             vero enim magnam accusantium! Quos est deserunt blanditiis sint
             eveniet culpa repellat, porro cum maiores! Delectus maiores
             consequatur tempora ipsam veritatis quo in sequi. Dolore fuga ad
-            quam assumenda, tempora quidem recusandae sint totam!
+            quam assumenda, tempora quidem recusandae sint totam! Lorem ipsum
+            dolor sit amet consectetur adipisicing elit. Quaerat molestiae
+            quidem at ratione totam itaque qui libero recusandae fugiat impedit.
+            Minima necessitatibus ex veniam nesciunt quisquam unde aperiam autem
+            laborum?
           </p>
         </section>
       </article>
     </div>
     <aside class="nav">
       <ul>
-        <!-- <li v-for="(header, index) in headers" :key="index">
-          <RouterLink :to="{ name: 'home', hash: '#6' }" class="link">{{
-            header
-          }}</RouterLink>
-        </li> -->
-        <li v-for="(header, index) in headers" :key="index">
-          <RouterLink to="#6" class="link">{{ header }}</RouterLink>
+        <li
+          v-for="(header, index) in headers"
+          :key="index"
+          :class="{ active: header === currentSection }"
+        >
+          <RouterLink
+            :to="{ path: '/home', hash: `#${header}` }"
+            class="link"
+            >{{ header }}</RouterLink
+          >
         </li>
       </ul>
     </aside>
@@ -57,6 +65,25 @@
 </template>
 
 <script lang="ts" setup>
+import { ref, onMounted } from "vue";
+const currentSection = ref();
+
+onMounted(() => {
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.intersectionRatio > 0) {
+          currentSection.value = entry.target.getAttribute("id");
+        }
+      });
+    },
+    { rootMargin: "0px 0px -80% 0px" }
+  );
+  document.querySelectorAll("section h2").forEach((section) => {
+    observer.observe(section);
+  });
+});
+
 const headers = [
   "Titre 1",
   "Titre 2",
@@ -76,6 +103,7 @@ const headers = [
   .wrapper {
     width: 100%;
     max-width: 800px;
+    margin-bottom: 500px;
   }
 
   .nav {
